@@ -2,18 +2,30 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-Shader::Shader(const std::string filepath)
-{
-	ShaderStrings values=parseShader(filepath);
-	std::cout << values.vertexshader << std::endl;
 
+Shader::Shader(const std::string& filepath)
+	:m_Renderer_Id(0),m_Filepath(filepath),m_LocationCache(0)
+{
+	ShaderStrings source=parseShader(filepath);
+	m_Renderer_Id = createShader(source.vertexshader, source.fragmentshader);
 }
 
 Shader::~Shader()
 {
+	glDeleteProgram(m_Renderer_Id);
 }
 
-ShaderStrings Shader::parseShader(const std::string filepath)
+void Shader::Bind() const
+{
+	glUseProgram(m_Renderer_Id);
+}
+
+void Shader::UnBind() const
+{
+	glUseProgram(0);
+}
+
+ShaderStrings Shader::parseShader(const std::string& filepath)
 {
 	std::ifstream stream(filepath);
 
@@ -28,14 +40,12 @@ ShaderStrings Shader::parseShader(const std::string filepath)
 
 	while (getline(stream, line)) {
 		if (line.find("#shader") != std::string::npos) {
-			if (line.find("vertex")) {
+			if (line.find("vertex") != (std::string::npos)) {
 				shaderType = ShaderType::VERTEX;
-				strings[(int)shaderType] << line << '\n';
 			}
 			else if (line.find("fragment") != (std::string::npos))
 			{
 				shaderType = ShaderType::FRAGMENT;
-				strings[(int)shaderType] << line << '\n';
 			}
 		}
 		else {
@@ -45,4 +55,53 @@ ShaderStrings Shader::parseShader(const std::string filepath)
 	 
 	return { strings [0].str(),strings [1].str()};
 
+}
+
+unsigned int Shader::createShader(const std::string& vertexshader, const std::string& fragmentshader)
+{
+	unsigned int program = glCreateProgram();
+	unsigned int vertexprogram = compileShader(GL_VERTEX_SHADER, vertexshader);
+	unsigned int fragmentprogram = compileShader(GL_VERTEX_SHADER, fragmentshader);
+
+	glAttachShader(program, vertexprogram);
+	glAttachShader(program, fragmentprogram);
+	glLinkProgram(program);
+	glValidateProgram(program);
+
+	return program;
+}
+
+unsigned int Shader::compileShader(unsigned int type, const std::string& source)
+{
+	unsigned int id = glCreateShader(type);
+	const char* src = source.c_str();
+	glShaderSource(id, 1, &src, NULL);
+	glCompileShader(id);
+
+	int result;
+	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+	if (result == GL_FALSE) {
+		int length;
+		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+		char* message = (char*)_malloca(length * sizeof(char));
+		glGetShaderInfoLog(id, length, &length, message);
+		std::cout << "failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << "shader" << std::endl;
+		std::cout << message << std::endl;
+		glDeleteShader(id);
+		return 0;
+	}
+
+	return id;
+}
+
+int Shader::GetUniform(const std::string& name)
+{
+	if (m_LocationCache.find(name) != m_LocationCache.end()) {
+		return m_LocationCache[name];
+	}
+	unsigned int location= glGetUniformLocation(m_Renderer_Id, name.c_str());
+	if (location == -1) {
+		std::cout << "uniform does not exist" << std::endl;
+	}
+	return location;
 }

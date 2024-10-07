@@ -44,6 +44,7 @@ int main(void) {
 
 
 	Shader shader("res/shaders/Basic.shader");
+	shader.Bind();
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwSwapBuffers(window);
