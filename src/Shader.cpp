@@ -61,8 +61,7 @@ unsigned int Shader::createShader(const std::string& vertexshader, const std::st
 {
 	unsigned int program = glCreateProgram();
 	unsigned int vertexprogram = compileShader(GL_VERTEX_SHADER, vertexshader);
-	unsigned int fragmentprogram = compileShader(GL_VERTEX_SHADER, fragmentshader);
-
+	unsigned int fragmentprogram = compileShader(GL_FRAGMENT_SHADER, fragmentshader);
 	glAttachShader(program, vertexprogram);
 	glAttachShader(program, fragmentprogram);
 	glLinkProgram(program);
@@ -91,6 +90,7 @@ unsigned int Shader::compileShader(unsigned int type, const std::string& source)
 		return 0;
 	}
 
+	std::cout << id << std::endl;
 	return id;
 }
 
