@@ -4,6 +4,8 @@
 #include "GLEW/include/glew.h"
 #include "GLFW/include/glfw3.h"
 #include "Shader.h"
+#include "VertexArray.h"
+#include "IndexBuffer.h"
 
 
 int main(void) {
@@ -73,21 +75,29 @@ int main(void) {
 	glBindVertexArray(VAO);
 
 
-	unsigned int VBO;
+	/*unsigned int VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);*/
+
+	VertexArray va;
+	VertexBuffer vb(vertices,sizeof(vertices));
+	VertexBufferLayout layout;
+	layout.push<float>(2);
+	layout.push<float>(4);
+	va.addBuffer(vb, layout);
+	IndexBuffer ib(indices, 6);
 
 	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	//glEnableVertexAttribArray(0);
 
 	// Position attribute
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // 2 floats for position
-	glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // 2 floats for position
+	//glEnableVertexAttribArray(0);
 
 	// Color attribute
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(2 * sizeof(float))); // 4 floats for color
-	glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(2 * sizeof(float))); // 4 floats for color
+	//glEnableVertexAttribArray(1);
 
 	unsigned int IBO;
 	glGenBuffers(1, &IBO);
