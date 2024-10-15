@@ -3,7 +3,7 @@
 #include "GLFW/include/glfw3.h"
 
 IndexBuffer::IndexBuffer(const void* data, unsigned int count)
-	:m_Renderer_id(0),m_count(0)
+	:m_Renderer_id(0),m_Count(count)
 {
 	ASSERT(sizeof(unsigned int) == sizeof(GLuint));
 	glGenBuffers(1, &m_Renderer_id);

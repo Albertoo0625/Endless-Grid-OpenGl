@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
+#include "Renderer.h"
 
 
 int main(void) {
@@ -70,9 +71,9 @@ int main(void) {
 	};
 
 
-	unsigned int VAO;
+	/*unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	glBindVertexArray(VAO);*/
 
 
 	/*unsigned int VBO;
@@ -99,18 +100,17 @@ int main(void) {
 	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(2 * sizeof(float))); // 4 floats for color
 	//glEnableVertexAttribArray(1);
 
-	unsigned int IBO;
+	/*unsigned int IBO;
 	glGenBuffers(1, &IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);*/
 
 	Shader shader("res/shaders/Basic.shader");
+	Renderer renderer;
 	while (!glfwWindowShouldClose(window)) {
-		glClear(GL_COLOR_BUFFER_BIT);	
-
-		shader.Bind();
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		renderer.Clear();
+		renderer.Draw(va, ib, shader);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
